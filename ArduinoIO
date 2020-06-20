@@ -1,0 +1,1371 @@
+   #if 1
+
+#include <Adafruit_GFX.h>
+#include <Adafruit_NeoMatrix.h>
+#include <Adafruit_NeoPixel.h>
+#ifndef PSTR
+ #define PSTR // Make Arduino Due happy
+#endif
+#include <MCUFRIEND_kbv.h>
+MCUFRIEND_kbv tft;
+#include <TouchScreen.h>
+#define MINPRESSURE 200
+#define MAXPRESSURE 1000
+using namespace std;
+
+#define PIN 45
+// ALL Touch panels and wiring is DIFFERENT
+// copy-paste results from TouchScreen_Calibr_native.ino
+
+const int XP=8,XM=A2,YP=A3,YM=9; //320x480 ID=0x9486
+
+const int TS_LEFT=121,TS_RT=903,TS_TOP=947,TS_BOT=93;
+
+
+
+
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
+
+Adafruit_GFX_Button on_btn, off_btn, new_btn,btn1 ,btn2 ,btn3 ,btn4 ,btn5 ,btn6 ,btn7 ,btn8 ,btn9 ,btn10 ,btn11 ,btn12 ,btn13 ,btn14 ,btn15 ,btn16 ,btn17 ,btn18 ,btn19 ,btn20 ,btn21 ,btn22 ,btn23 ,btn24 ,btn25 ,btn26 ,btn27 ,btn28 ,btn29 ,btn30 ,btn31 ,btn32 ,btn33 ,btn34 ,btn35 ,btn36 ,btn37 ,btn38 ,btn39 ,btn40 ,btn41 ,btn42 ,btn43 ,btn44 ,btn45 ,btn46 ,btn47 ,btn48 ,btn49 ,btn50;
+int pixel_x, pixel_y;     //Touch_getXY() updates global vars
+bool Touch_getXY(void)
+{
+    TSPoint p = ts.getPoint();
+    pinMode(YP, OUTPUT);      //restore shared pins
+    pinMode(XM, OUTPUT);
+    digitalWrite(YP, HIGH);   //because TFT control pins
+    digitalWrite(XM, HIGH);
+    bool pressed = (p.z > MINPRESSURE && p.z < MAXPRESSURE);
+    if (pressed) {
+          pixel_x = map(p.x, TS_LEFT, TS_RT, 0, 320);
+          pixel_y = map(p.y, TS_TOP, TS_BOT, 0, 480);
+    }
+    return pressed;
+}
+
+#define BLACK   0x0000
+#define BLUE    0x001F
+#define RED     0xF800
+#define GREEN   0x07E0
+#define CYAN    0x07FF
+#define MAGENTA 0xF81F
+#define YELLOW  0xFFE0
+#define WHITE   0xFFFF
+
+#define HEIGHT 48
+#define WIDTH  64
+#define START  30
+#define BTN_WIDTH 50
+#define BTN_HEIGHT 40
+
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(5, 10, PIN,
+  NEO_MATRIX_BOTTOM     + NEO_MATRIX_LEFT +
+  NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG,
+  NEO_GRB         + NEO_KHZ800);
+
+
+void setup(void)
+{
+
+  matrix.begin();
+  matrix.setTextWrap(false);
+  matrix.setBrightness(255);
+  
+    Serial.begin(9600);
+    uint16_t ID = tft.readID();
+    Serial.print("TFT ID = 0x");
+    Serial.println(ID, HEX);
+    Serial.println("Calibrate for your Touch Panel");
+    Serial.print(tft.width());
+    Serial.print(tft.height());
+    if (ID == 0xD3D3) ID = 0x9486; // write-only shield
+    tft.begin(ID);
+    tft.setRotation(0);            //PORTRAIT
+    tft.fillScreen(BLACK);
+     // ( ? x,y, width, height, border, fill, words_color, words,font_size)
+    on_btn.initButton(&tft,  60, 200, 100, 40, RED, CYAN, YELLOW, "ON", 1);
+    new_btn.initButton(&tft,  100, 50, 30, 30, WHITE, CYAN, BLACK,"" , 2);
+    off_btn.initButton(&tft, 180, 200, 100, 40, WHITE, CYAN, BLACK, "OFF", 2);
+
+    // screen width 240 px
+    // scren height 320 px
+
+    // row 1
+    btn1.initButton(&tft,  START            , START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"1" , 2);
+    btn2.initButton(&tft,  START + WIDTH * 1, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"2" , 2);
+    btn3.initButton(&tft,  START + WIDTH * 2, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"3" , 2);
+    btn4.initButton(&tft,  START + WIDTH * 3, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"4" , 2);
+    btn5.initButton(&tft,  START + WIDTH * 4, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"5" , 2);
+
+    // row 2
+    btn6.initButton(&tft,  START            , START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"6" , 2);
+    btn7.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"7" , 2);
+    btn8.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"8" , 2);
+    btn9.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"9" , 2);
+    btn10.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"10" , 2);
+
+    // row 3
+    btn11.initButton(&tft,  START            , START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"11" , 2);
+    btn12.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"12" , 2);
+    btn13.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"13" , 2);
+    btn14.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"14" , 2);
+    btn15.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"15" , 2);
+
+    // row 4
+    btn16.initButton(&tft,  START            , START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"16" , 2);
+    btn17.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"17" , 2);
+    btn18.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"18" , 2);
+    btn19.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"19" , 2);
+    btn20.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"20" , 2);
+    // row 5
+    btn21.initButton(&tft,  START            , START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"21" , 2);
+    btn22.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"22" , 2);
+    btn23.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"23" , 2);
+    btn24.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"24" , 2);
+    btn25.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"25" , 2);
+    // row 6
+    btn26.initButton(&tft,  START            , START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"26" , 2);
+    btn27.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"27" , 2);
+    btn28.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"28" , 2);
+    btn29.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"29" , 2);
+    btn30.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"30" , 2);
+    // row 7
+    btn31.initButton(&tft,  START            , START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"31" , 2);
+    btn32.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"32" , 2);
+    btn33.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"33" , 2);
+    btn34.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"34" , 2);
+    btn35.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"35" , 2);
+
+    // row 8
+    btn36.initButton(&tft,  START            , START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"36" , 2);
+    btn37.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"37" , 2);
+    btn38.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"38" , 2);
+    btn39.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"39" , 2);
+    btn40.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"40" , 2);
+    // row 9
+    btn41.initButton(&tft,  START            , START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"41" , 2);
+    btn42.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"42" , 2);
+    btn43.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"43" , 2);
+    btn44.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"44" , 2);
+    btn45.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"45" , 2);
+
+    // row 10
+    btn46.initButton(&tft,  START            , START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"46" , 2);
+    btn47.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"47" , 2);
+    btn48.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"48" , 2);
+    btn49.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"49" , 2);
+    btn50.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"50" , 2);
+
+
+
+    btn1.drawButton(false);
+    btn2.drawButton(false);
+    btn3.drawButton(false);
+    btn4.drawButton(false);
+    btn5.drawButton(false);
+    btn6.drawButton(false);
+    btn7.drawButton(false);
+    btn8.drawButton(false);
+    btn9.drawButton(false);
+    btn10.drawButton(false);
+    btn11.drawButton(false);
+    btn12.drawButton(false);
+    btn13.drawButton(false);
+    btn14.drawButton(false);
+    btn15.drawButton(false);
+    btn16.drawButton(false);
+    btn17.drawButton(false);
+    btn18.drawButton(false);
+    btn19.drawButton(false);
+    btn20.drawButton(false);
+    btn21.drawButton(false);
+    btn22.drawButton(false);
+    btn23.drawButton(false);
+    btn24.drawButton(false);
+    btn25.drawButton(false);
+    btn26.drawButton(false);
+    btn27.drawButton(false);
+    btn28.drawButton(false);
+    btn29.drawButton(false);
+    btn30.drawButton(false);
+    btn31.drawButton(false);
+    btn32.drawButton(false);
+    btn33.drawButton(false);
+    btn34.drawButton(false);
+    btn35.drawButton(false);
+    btn36.drawButton(false);
+    btn37.drawButton(false);
+    btn38.drawButton(false);
+    btn39.drawButton(false);
+    btn40.drawButton(false);
+    btn41.drawButton(false);
+    btn42.drawButton(false);
+    btn43.drawButton(false);
+    btn44.drawButton(false);
+    btn45.drawButton(false);
+    btn46.drawButton(false);
+    btn47.drawButton(false);
+    btn48.drawButton(false);
+    btn49.drawButton(false);
+    btn50.drawButton(false);
+
+
+}
+
+/* two buttons are quite simple
+ */
+bool light1  = false;
+bool light2  = false;
+bool light3  = false;
+bool light4  = false;
+bool light5  = false;
+bool light6  = false;
+bool light7  = false;
+bool light8  = false;
+bool light9  = false;
+bool light10 = false;
+bool light11 = false;
+bool light12 = false;
+bool light13 = false;
+bool light14 = false;
+bool light15 = false;
+bool light16 = false;
+bool light17 = false;
+bool light18 = false;
+bool light19 = false;
+bool light20 = false;
+bool light21 = false;
+bool light22 = false;
+bool light23 = false;
+bool light24 = false;
+bool light25 = false;
+bool light26 = false;
+bool light27 = false;
+bool light28 = false;
+bool light29 = false;
+bool light30 = false;
+bool light31 = false;
+bool light32 = false;
+bool light33 = false;
+bool light34 = false;
+bool light35 = false;
+bool light36 = false;
+bool light37 = false;
+bool light38 = false;
+bool light39 = false;
+bool light40 = false;
+bool light41 = false;
+bool light42 = false;
+bool light43 = false;
+bool light44 = false;
+bool light45 = false;
+bool light46 = false;
+bool light47 = false;
+bool light48 = false;
+bool light49 = false;
+bool light50 = false;
+
+void loop(void)
+{
+  
+  matrix.fillScreen(0);
+  matrix.setCursor(0, 0);
+  
+  
+
+  
+    bool down = Touch_getXY();
+    if(down) {
+      Serial.print("x: ");
+      Serial.print(pixel_x);
+      Serial.print("\n");
+      Serial.print("Y: ");
+      Serial.print(pixel_y);
+      Serial.print("\n");
+      
+    }
+   
+
+
+    //button 01
+    btn1.press(down && btn1.contains(pixel_x, pixel_y)); 
+    if (btn1.justPressed())  {
+      if (light1 == false) {
+        light1 = true;
+        btn1.initButton(&tft,  START             , START, BTN_WIDTH, BTN_HEIGHT, WHITE, BLACK, YELLOW,"1" , 2);  
+      }
+      else {
+         btn1.initButton(&tft,  START             , START, BTN_WIDTH, BTN_HEIGHT, WHITE, BLACK, CYAN,"1" , 2);
+         light1 = false;
+      }  
+      btn1.drawButton(true);
+    }
+    if (light1 == true) {
+      matrix.drawPixel(0,0, 0xFFE0); 
+    }
+    
+
+    //button 02
+    btn2.press(down && btn2.contains(pixel_x, pixel_y)); 
+    if (btn2.justReleased()) { 
+      if (light2 == false){
+        light2 = true;
+        btn2.initButton(&tft,  START + WIDTH * 1, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"2" , 2); 
+      btn2.drawButton();
+      }
+      else {
+        light2 = false;
+      }    
+      // delay(250);
+    }
+    if (light2 == true) {
+      matrix.drawPixel(1,0, 244);  
+        btn2.initButton(&tft,  START + WIDTH * 1, START, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"2" , 2);
+    }
+    if (btn2.justPressed())  {
+      // btn2.drawButton(true);
+    }
+
+    //button 03
+   btn3.press(down && btn3.contains(pixel_x, pixel_y)); 
+    if (btn3.justReleased()) { 
+      if (light3 == false){
+        light3 = true;
+        btn3.initButton(&tft,  START + WIDTH * 2, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"3" , 2); 
+      btn3.drawButton();
+      }
+      else {
+        light3 = false;
+      }    
+      // delay(250);
+    }
+    if (light3 == true) {
+      matrix.drawPixel(2,0, 244);  
+        btn3.initButton(&tft,  START + WIDTH * 2, START, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"3" , 2);
+    }
+    if (btn3.justPressed())  {
+      // btn3.drawButton(true);
+    }
+
+    //button 04
+   btn4.press(down && btn4.contains(pixel_x, pixel_y)); 
+    if (btn4.justReleased()) { 
+      if (light4 == false){
+        light4 = true;
+        btn4.initButton(&tft, START + WIDTH * 3, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"4" , 2); 
+      btn4.drawButton();
+      }
+      else {
+        light4 = false;
+      }    
+      // delay(250);
+    }
+    if (light4 == true) {
+      matrix.drawPixel(3,0, 244);  
+        btn4.initButton(&tft,  START + WIDTH * 3, START, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"4" , 2);
+    }
+    if (btn4.justPressed())  {
+      // btn4.drawButton(true);
+    }
+
+    //button 05
+    btn5.press(down && btn5.contains(pixel_x, pixel_y)); 
+    if (btn5.justReleased()) { 
+      if (light5 == false){
+        light5 = true;
+        btn5.initButton(&tft, START + WIDTH * 4, START, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"5" , 2); 
+      btn5.drawButton();
+      }
+      else {
+        light5 = false;
+      }    
+      // delay(250);
+    }
+    if (light5 == true) {
+      matrix.drawPixel(4,0, 244);  
+        btn5.initButton(&tft,  START + WIDTH * 4, START, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"5" , 2);
+    }
+    if (btn5.justPressed())  {
+      // btn5.drawButton(true);
+    }
+
+    //button 06
+    btn6.press(down && btn6.contains(pixel_x, pixel_y)); 
+    if (btn6.justReleased()) { 
+      if (light6 == false){
+        light6 = true;
+        btn6.initButton(&tft,  START            , START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"6" , 2); 
+      btn6.drawButton();
+      }
+      else {
+        light6 = false;
+      }    
+      // delay(250);
+    }
+    if (light6 == true) {
+      matrix.drawPixel(0,1, 244);  
+        btn6.initButton(&tft,  START             , START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"6" , 2);
+    }
+    if (btn6.justPressed())  {
+      // btn6.drawButton(true);
+    }
+
+    //button 07
+    btn7.press(down && btn7.contains(pixel_x, pixel_y)); 
+    if (btn7.justReleased()) { 
+      if (light7 == false){
+        light7 = true;
+        btn7.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"7" , 2); 
+      btn7.drawButton();
+      }
+      else {
+        light7 = false;
+      }    
+      // delay(250);
+    }
+    if (light7 == true) {
+      matrix.drawPixel(1,1, 244);  
+        btn7.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"7" , 2);
+    }
+    if (btn7.justPressed())  {
+      // btn7.drawButton(true);
+    }
+
+    //button 08
+   btn8.press(down && btn8.contains(pixel_x, pixel_y)); 
+    if (btn8.justReleased()) { 
+      if (light8 == false){
+        light8 = true;
+        btn8.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"8" , 2); 
+      btn8.drawButton();
+      }
+      else {
+        light8 = false;
+      }    
+      // delay(250);
+    }
+    if (light8 == true) {
+      matrix.drawPixel(2,1, 244);  
+        btn8.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"8" , 2);
+    }
+    if (btn8.justPressed())  {
+      // btn8.drawButton(true);
+    }
+
+    //button 09
+   btn9.press(down && btn9.contains(pixel_x, pixel_y)); 
+    if (btn9.justReleased()) { 
+      if (light9 == false){
+        light9 = true;
+        btn9.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"9" , 2); 
+      btn9.drawButton();
+      }
+      else {
+        light9 = false;
+      }    
+      // delay(250);
+    }
+    if (light9 == true) {
+      matrix.drawPixel(3,1, 244);  
+        btn9.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"9" , 2);
+    }
+    if (btn9.justPressed())  {
+      // btn9.drawButton(true);
+    }
+
+    //button 10
+    btn10.press(down && btn10.contains(pixel_x, pixel_y)); 
+    if (btn10.justReleased()) { 
+      if (light10 == false){
+        light10 = true;
+        btn10.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"10" , 2); 
+      btn10.drawButton();
+      }
+      else {
+        light10 = false;
+      }    
+      // delay(250);
+    }
+    if (light10 == true) {
+      matrix.drawPixel(4,1, 244);  
+        btn10.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 1, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"10" , 2);
+    }
+    if (btn10.justPressed())  {
+      // btn10.drawButton(true);
+    }
+    //button 11
+    btn11.press(down && btn11.contains(pixel_x, pixel_y)); 
+    if (btn11.justReleased()) { 
+      if (light11 == false){
+        light11 = true;
+        btn11.initButton(&tft,  START            , START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"11" , 2); 
+      btn11.drawButton();
+      }
+      else {
+        light11 = false;
+      }    
+      // delay(250);
+    }
+    if (light11 == true) {
+      matrix.drawPixel(0,2, 244);  
+        btn11.initButton(&tft,  START             , START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"11" , 2);
+    }
+    if (btn11.justPressed())  {
+      // btn11.drawButton(true);
+    }
+
+    //button 12
+    btn12.press(down && btn12.contains(pixel_x, pixel_y)); 
+    if (btn12.justReleased()) { 
+      if (light12 == false){
+        light12 = true;
+        btn12.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"12" , 2); 
+      btn12.drawButton();
+      }
+      else {
+        light12 = false;
+      }    
+      // delay(250);
+    }
+    if (light12 == true) {
+      matrix.drawPixel(1,2, 244);  
+        btn12.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"12" , 2);
+    }
+    if (btn12.justPressed())  {
+      // btn12.drawButton(true);
+    }
+
+    //button 13
+   btn13.press(down && btn13.contains(pixel_x, pixel_y)); 
+    if (btn13.justReleased()) { 
+      if (light13 == false){
+        light13 = true;
+        btn13.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"13" , 2); 
+      btn13.drawButton();
+      }
+      else {
+        light13 = false;
+      }    
+      // delay(250);
+    }
+    if (light13 == true) {
+      matrix.drawPixel(2,2, 244);  
+        btn13.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"13" , 2);
+    }
+    if (btn13.justPressed())  {
+      // btn13.drawButton(true);
+    }
+
+    //button 14
+   btn14.press(down && btn14.contains(pixel_x, pixel_y)); 
+    if (btn14.justReleased()) { 
+      if (light14 == false){
+        light14 = true;
+        btn14.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"14" , 2); 
+      btn14.drawButton();
+      }
+      else {
+        light14 = false;
+      }    
+      // delay(250);
+    }
+    if (light14 == true) {
+      matrix.drawPixel(3,2, 244);  
+        btn14.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"14" , 2);
+    }
+    if (btn14.justPressed())  {
+      // btn14.drawButton(true);
+    }
+
+    //button 15
+    btn15.press(down && btn15.contains(pixel_x, pixel_y)); 
+    if (btn15.justReleased()) { 
+      if (light15 == false){
+        light15 = true;
+        btn15.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"15" , 2); 
+      btn15.drawButton();
+      }
+      else {
+        light15 = false;
+      }    
+      // delay(150);
+    }
+    if (light15 == true) {
+      matrix.drawPixel(4,2, 244);  
+        btn15.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 2, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"15" , 2);
+    }
+    if (btn15.justPressed())  {
+      // btn15.drawButton(true);
+    }
+    //button 16
+    btn16.press(down && btn16.contains(pixel_x, pixel_y)); 
+    if (btn16.justReleased()) { 
+      if (light16 == false){
+        light16 = true;
+        btn16.initButton(&tft,  START            , START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"16" , 2); 
+      btn16.drawButton();
+      }
+      else {
+        light16 = false;
+      }    
+      // delay(250);
+    }
+    if (light16 == true) {
+      matrix.drawPixel(0,3, 244);  
+        btn16.initButton(&tft,  START             , START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"16" , 2);
+    }
+    if (btn16.justPressed())  {
+      // btn16.drawButton(true);
+    }
+
+    //button 17
+    btn17.press(down && btn17.contains(pixel_x, pixel_y)); 
+    if (btn17.justReleased()) { 
+      if (light17 == false){
+        light17 = true;
+        btn17.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"17" , 2); 
+      btn17.drawButton();
+      }
+      else {
+        light17 = false;
+      }    
+      // delay(250);
+    }
+    if (light17 == true) {
+      matrix.drawPixel(1,3, 244);  
+        btn17.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"17" , 2);
+    }
+    if (btn17.justPressed())  {
+      // btn17.drawButton(true);
+    }
+
+    //button 18
+   btn18.press(down && btn18.contains(pixel_x, pixel_y)); 
+    if (btn18.justReleased()) { 
+      if (light18 == false){
+        light18 = true;
+        btn18.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"18" , 2); 
+      btn18.drawButton();
+      }
+      else {
+        light18 = false;
+      }    
+      // delay(250);
+    }
+    if (light18 == true) {
+      matrix.drawPixel(2,3, 244);  
+        btn18.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"18" , 2);
+    }
+    if (btn18.justPressed())  {
+      // btn18.drawButton(true);
+    }
+
+    //button 19
+   btn19.press(down && btn19.contains(pixel_x, pixel_y)); 
+    if (btn19.justReleased()) { 
+      if (light19 == false){
+        light19 = true;
+        btn19.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"19" , 2); 
+      btn19.drawButton();
+      }
+      else {
+        light19 = false;
+      }    
+      // delay(250);
+    }
+    if (light19 == true) {
+      matrix.drawPixel(3,3, 244);  
+        btn19.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"19" , 2);
+    }
+    if (btn19.justPressed())  {
+      // btn19.drawButton(true);
+    }
+
+    //button 20
+    btn20.press(down && btn20.contains(pixel_x, pixel_y)); 
+    if (btn20.justReleased()) { 
+      if (light20 == false){
+        light20 = true;
+        btn20.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"20" , 2); 
+      btn20.drawButton();
+      }
+      else {
+        light20 = false;
+      }    
+      // delay(200);
+    }
+    if (light20 == true) {
+      matrix.drawPixel(4,3, 244);  
+        btn20.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 3, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"20" , 2);
+    }
+    if (btn20.justPressed())  {
+      // btn20.drawButton(true);
+    }
+    //button 21
+    btn21.press(down && btn21.contains(pixel_x, pixel_y)); 
+    if (btn21.justReleased()) { 
+      if (light21 == false){
+        light21 = true;
+        btn21.initButton(&tft,  START            , START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"21" , 2); 
+      btn21.drawButton();
+      }
+      else {
+        light21 = false;
+      }    
+      // delay(250);
+    }
+    if (light21 == true) {
+      matrix.drawPixel(0,4, 244);  
+        btn21.initButton(&tft,  START             , START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"21" , 2);
+    }
+    if (btn21.justPressed())  {
+      // btn21.drawButton(true);
+    }
+
+    //button 22
+    btn22.press(down && btn22.contains(pixel_x, pixel_y)); 
+    if (btn22.justReleased()) { 
+      if (light22 == false){
+        light22 = true;
+        btn22.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"22" , 2); 
+      btn22.drawButton();
+      }
+      else {
+        light22 = false;
+      }    
+      // delay(250);
+    }
+    if (light22 == true) {
+      matrix.drawPixel(1,4, 244);  
+        btn22.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"22" , 2);
+    }
+    if (btn22.justPressed())  {
+      // btn22.drawButton(true);
+    }
+
+    //button 23
+   btn23.press(down && btn23.contains(pixel_x, pixel_y));
+     
+    if (btn23.justReleased()) { 
+      
+      if (light23 == false){
+        light23 = true;
+        btn23.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"23" , 2); 
+      btn23.drawButton();
+      }
+      else {
+        light23 = false;
+      }
+        
+       
+      // delay(250);
+    }
+        btn23.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"23" , 2);
+    if (light23 == true) {
+      matrix.drawPixel(2,4, 244);
+        
+    }
+    if (btn23.justPressed())  {
+     // btn23.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, GREEN, BLACK,"l" , 2);
+      // btn23.drawButton(true);
+      
+    }
+    //button 24
+   btn24.press(down && btn24.contains(pixel_x, pixel_y)); 
+    if (btn24.justReleased()) { 
+      if (light24 == false){
+        light24 = true;
+        btn24.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"24" , 2); 
+      btn24.drawButton();
+      }
+      else {
+        light24 = false;
+      }    
+      // delay(250);
+    }
+    if (light24 == true) {
+      matrix.drawPixel(3,4, 244);  
+        btn24.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"24" , 2);
+    }
+    if (btn24.justPressed())  {
+      // btn24.drawButton(true);
+    }
+
+    //button 25
+    btn25.press(down && btn25.contains(pixel_x, pixel_y)); 
+    if (btn25.justReleased()) { 
+      if (light25 == false){
+        light25 = true;
+        btn25.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"25" , 2); 
+      btn25.drawButton();
+      }
+      else {
+        light25 = false;
+      }    
+      // delay(250);
+    }
+    if (light25 == true) {
+      matrix.drawPixel(4,4, 244);  
+        btn25.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"25" , 2);
+    }
+    if (btn25.justPressed())  {
+      // btn25.drawButton(true);
+    }
+    //button 26
+    btn26.press(down && btn26.contains(pixel_x, pixel_y)); 
+    if (btn26.justReleased()) { 
+      if (light26 == false){
+        light26 = true;
+        btn26.initButton(&tft,  START            , START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"26" , 2); 
+      btn26.drawButton();
+      }
+      else {
+        light26 = false;
+      }    
+      // delay(250);
+    }
+    if (light26 == true) {
+      matrix.drawPixel(0,5, 244);  
+        btn26.initButton(&tft,  START             , START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"26" , 2);
+    }
+    if (btn26.justPressed())  {
+      // btn26.drawButton(true);
+    }
+
+    //button 27
+    btn27.press(down && btn27.contains(pixel_x, pixel_y)); 
+    if (btn27.justReleased()) { 
+      if (light27 == false){
+        light27 = true;
+        btn27.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"27" , 2); 
+      btn27.drawButton();
+      }
+      else {
+        light27 = false;
+      }    
+      // delay(2750);
+    }
+    if (light27 == true) {
+      matrix.drawPixel(1,5, 244);  
+        btn27.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"27" , 2);
+    }
+    if (btn27.justPressed())  {
+      // btn27.drawButton(true);
+    }
+
+    //button 28
+   btn28.press(down && btn28.contains(pixel_x, pixel_y)); 
+    if (btn28.justReleased()) { 
+      if (light28 == false){
+        light28 = true;
+        btn28.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"28" , 2); 
+      btn28.drawButton();
+      }
+      else {
+        light28 = false;
+      }    
+      // delay(250);
+    }
+    if (light28 == true) {
+      matrix.drawPixel(2,5, 244);  
+        btn28.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"28" , 2);
+    }
+    if (btn28.justPressed())  {
+      // btn28.drawButton(true);
+    }
+
+    //button 29
+   btn29.press(down && btn29.contains(pixel_x, pixel_y)); 
+    if (btn29.justReleased()) { 
+      if (light29 == false){
+        light29 = true;
+        btn29.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"29" , 2); 
+      btn29.drawButton();
+      }
+      else {
+        light29 = false;
+      }    
+      // delay(250);
+    }
+    if (light29 == true) {
+      matrix.drawPixel(3,5, 244);  
+        btn29.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"29" , 2);
+    }
+    if (btn29.justPressed())  {
+      // btn29.drawButton(true);
+    }
+
+    //button 30
+    btn30.press(down && btn30.contains(pixel_x, pixel_y)); 
+    if (btn30.justReleased()) { 
+      if (light30 == false){
+        light30 = true;
+        btn30.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"30" , 2); 
+      btn30.drawButton();
+      }
+      else {
+        light30 = false;
+      }    
+      // delay(250);
+    }
+    if (light30 == true) {
+      matrix.drawPixel(4,5, 244);  
+        btn30.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 5, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"30" , 2);
+    }
+    if (btn30.justPressed())  {
+      // btn30.drawButton(true);
+    }
+
+    //button 31
+    btn31.press(down && btn31.contains(pixel_x, pixel_y)); 
+    if (btn31.justReleased()) { 
+      if (light31 == false){
+        light31 = true;
+        btn31.initButton(&tft,  START            , START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"31" , 2); 
+      btn31.drawButton();
+      }
+      else {
+        light31 = false;
+      }    
+      // delay(250);
+    }
+    if (light31 == true) {
+      matrix.drawPixel(0,6, 244);  
+        btn31.initButton(&tft,  START             , START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"31" , 2);
+    }
+    if (btn31.justPressed())  {
+      // btn31.drawButton(true);
+    }
+
+    //button 32
+    btn32.press(down && btn32.contains(pixel_x, pixel_y)); 
+    if (btn32.justReleased()) { 
+      if (light32 == false){
+        light32 = true;
+        btn32.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"32" , 2); 
+      btn32.drawButton();
+      }
+      else {
+        light32 = false;
+      }    
+      // delay(250);
+    }
+    if (light32 == true) {
+      matrix.drawPixel(1,6, 244);  
+        btn32.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"32" , 2);
+    }
+    if (btn32.justPressed())  {
+      // btn32.drawButton(true);
+    }
+
+    //button 33
+   btn33.press(down && btn33.contains(pixel_x, pixel_y)); 
+    if (btn33.justReleased()) { 
+      if (light33 == false){
+        light33 = true;
+        btn33.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"33" , 2); 
+      btn33.drawButton();
+      }
+      else {
+        light33 = false;
+      }    
+      // delay(250);
+    }
+    if (light33 == true) {
+      matrix.drawPixel(2,6, 244);  
+        btn33.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"33" , 2);
+    }
+    if (btn33.justPressed())  {
+      // btn33.drawButton(true);
+    }
+
+    //button 34
+   btn34.press(down && btn34.contains(pixel_x, pixel_y)); 
+    if (btn34.justReleased()) { 
+      if (light34 == false){
+        light34 = true;
+        btn34.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"34" , 2); 
+      btn34.drawButton();
+      }
+      else {
+        light34 = false;
+      }    
+      // delay(250);
+    }
+    if (light34 == true) {
+      matrix.drawPixel(3,6, 244);  
+        btn34.initButton(&tft,  START + WIDTH * 3, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"34" , 2);
+    }
+    if (btn34.justPressed())  {
+      // btn34.drawButton(true);
+    }
+
+    //button 35
+    btn35.press(down && btn35.contains(pixel_x, pixel_y)); 
+    if (btn35.justReleased()) { 
+      if (light35 == false){
+        light35 = true;
+        btn35.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"35" , 2); 
+      btn35.drawButton();
+      }
+      else {
+        light35 = false;
+      }    
+      // delay(250);
+    }
+    if (light35 == true) {
+      matrix.drawPixel(4,6, 244);  
+        btn35.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 6, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"35" , 2);
+    }
+    if (btn35.justPressed())  {
+      // btn35.drawButton(true);
+    }
+
+    //button 36
+    btn36.press(down && btn36.contains(pixel_x, pixel_y)); 
+    if (btn36.justReleased()) { 
+      if (light36 == false){
+        light36 = true;
+        btn36.initButton(&tft,  START            , START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"36" , 2); 
+      btn36.drawButton();
+      }
+      else {
+        light36 = false;
+      }    
+      // delay(250);
+    }
+    if (light36 == true) {
+      matrix.drawPixel(0,7, 244);  
+        btn36.initButton(&tft,  START             , START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"36" , 2);
+    }
+    if (btn36.justPressed())  {
+      // btn36.drawButton(true);
+    }
+
+    //button 37
+    btn37.press(down && btn37.contains(pixel_x, pixel_y)); 
+    if (btn37.justReleased()) { 
+      if (light37 == false){
+        light37 = true;
+        btn37.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"37" , 2); 
+      btn37.drawButton();
+      }
+      else {
+        light37 = false;
+      }    
+      // delay(250);
+    }
+    if (light37 == true) {
+      matrix.drawPixel(1,7, 244);  
+        btn37.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"37" , 2);
+    }
+    if (btn37.justPressed())  {
+      // btn37.drawButton(true);
+    }
+
+    //button 38
+   btn38.press(down && btn38.contains(pixel_x, pixel_y)); 
+    if (btn38.justReleased()) { 
+      if (light38 == false){
+        light38 = true;
+        btn38.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"38" , 2); 
+      btn38.drawButton();
+      }
+      else {
+        light38 = false;
+      }    
+      // delay(250);
+    }
+    if (light38 == true) {
+      matrix.drawPixel(2, 7, 244);  
+        btn38.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"38" , 2);
+    }
+    if (btn38.justPressed())  {
+      // btn38.drawButton(true);
+    }
+
+    //button 39
+   btn39.press(down && btn39.contains(pixel_x, pixel_y)); 
+    if (btn39.justReleased()) { 
+      if (light39 == false){
+        light39 = true;
+        btn39.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"39" , 2); 
+      btn39.drawButton();
+      }
+      else {
+        light39 = false;
+      }    
+      // delay(250);
+    }
+    if (light39 == true) {
+      matrix.drawPixel(3,7, 244);  
+        btn39.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"39" , 2);
+    }
+    if (btn39.justPressed())  {
+      // btn39.drawButton(true);
+    }
+
+    //button 40
+    btn40.press(down && btn40.contains(pixel_x, pixel_y)); 
+    if (btn40.justReleased()) { 
+      if (light40 == false){
+        light40 = true;
+        btn40.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"40" , 2); 
+      btn40.drawButton();
+      }
+      else {
+        light40 = false;
+      }    
+      // delay(250);
+    }
+    if (light40 == true) {
+      matrix.drawPixel(4,7, 244);  
+        btn40.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 7, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"40" , 2);
+    }
+    if (btn40.justPressed())  {
+      // btn40.drawButton(true);
+    }
+    //button 41
+    btn41.press(down && btn41.contains(pixel_x, pixel_y)); 
+    if (btn41.justReleased()) { 
+      if (light41 == false){
+        light41 = true;
+        btn41.initButton(&tft,  START            , START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"41" , 2); 
+      btn41.drawButton();
+      }
+      else {
+        light41 = false;
+      }    
+      // delay(250);
+    }
+    if (light41 == true) {
+      matrix.drawPixel(0,8, 244);  
+        btn41.initButton(&tft,  START             , START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"41" , 2);
+    }
+    if (btn41.justPressed())  {
+      // btn41.drawButton(true);
+    }
+
+    //button 42
+    btn42.press(down && btn42.contains(pixel_x, pixel_y)); 
+    if (btn42.justReleased()) { 
+      if (light42 == false){
+        light42 = true;
+        btn42.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"42" , 2); 
+      btn42.drawButton();
+      }
+      else {
+        light42 = false;
+      }    
+      // delay(250);
+    }
+    if (light42 == true) {
+      matrix.drawPixel(1,8, 244);  
+        btn42.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"42" , 2);
+    }
+    if (btn42.justPressed())  {
+      // btn42.drawButton(true);
+    }
+
+    //button 43
+   btn43.press(down && btn43.contains(pixel_x, pixel_y)); 
+    if (btn43.justReleased()) { 
+      if (light43 == false){
+        light43 = true;
+        btn43.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"43" , 2); 
+      btn43.drawButton();
+      }
+      else {
+        light43 = false;
+      }    
+      // delay(250);
+    }
+    if (light43 == true) {
+      matrix.drawPixel(2,8, 244);  
+        btn43.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"43" , 2);
+    }
+    if (btn43.justPressed())  {
+      // btn43.drawButton(true);
+    }
+
+    //button 44
+   btn44.press(down && btn44.contains(pixel_x, pixel_y)); 
+    if (btn44.justReleased()) { 
+      if (light44 == false){
+        light44 = true;
+        btn44.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"44" , 2); 
+      btn44.drawButton();
+      }
+      else {
+        light44 = false;
+      }    
+      // delay(250);
+    }
+    if (light44 == true) {
+      matrix.drawPixel(3,8, 244);  
+        btn44.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"44" , 2);
+    }
+    if (btn44.justPressed())  {
+      // btn44.drawButton(true);
+    }
+
+    //button 45
+    btn45.press(down && btn45.contains(pixel_x, pixel_y)); 
+    if (btn45.justReleased()) { 
+      if (light45 == false){
+        light45 = true;
+        btn45.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"45" , 2); 
+      btn45.drawButton();
+      }
+      else {
+        light45 = false;
+      }    
+      // delay(250);
+    }
+    if (light45 == true) {
+      matrix.drawPixel(4,8, 244);  
+        btn45.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 8, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"45" , 2);
+    }
+    if (btn45.justPressed())  {
+      // btn45.drawButton(true);
+    }
+
+    //button 46
+    btn46.press(down && btn46.contains(pixel_x, pixel_y)); 
+    if (btn46.justReleased()) { 
+      if (light46 == false){
+        light46 = true;
+        btn46.initButton(&tft,  START            , START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"46" , 2); 
+      btn46.drawButton();
+      }
+      else {
+        light46 = false;
+      }    
+      // delay(250);
+    }
+    if (light46 == true) {
+      matrix.drawPixel(0,9, 244);  
+        btn46.initButton(&tft,  START             , START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"46" , 2);
+    }
+    if (btn46.justPressed())  {
+      // btn46.drawButton(true);
+    }
+
+    //button 47
+    btn47.press(down && btn47.contains(pixel_x, pixel_y)); 
+    if (btn47.justReleased()) { 
+      if (light47 == false){
+        light47 = true;
+        btn47.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"47" , 2); 
+      btn47.drawButton();
+      }
+      else {
+        light47 = false;
+      }    
+      // delay(250);
+    }
+    if (light47 == true) {
+      matrix.drawPixel(1,9, 244);  
+        btn47.initButton(&tft,  START + WIDTH * 1, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"47" , 2);
+    }
+    if (btn47.justPressed())  {
+      // btn47.drawButton(true);
+    }
+
+    //button 48
+   btn48.press(down && btn48.contains(pixel_x, pixel_y));
+     
+    if (btn48.justReleased()) { 
+      
+      if (light48 == false){
+        light48 = true;
+        btn48.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"48" , 2); 
+      btn48.drawButton();
+      }
+      else {
+        light48 = false;
+      }
+        
+       
+      // delay(250);
+    }
+        btn48.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"48" , 2);
+    if (light48 == true) {
+      matrix.drawPixel(2,9, 244);
+        
+    }
+    if (btn48.justPressed())  {
+     // btn48.initButton(&tft,  START + WIDTH * 2, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, GREEN, BLACK,"l" , 2);
+      // btn48.drawButton(true);
+      
+    }
+    //button 49
+   btn49.press(down && btn49.contains(pixel_x, pixel_y)); 
+    if (btn49.justReleased()) { 
+      if (light49 == false){
+        light49 = true;
+        btn49.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"49" , 2); 
+      btn49.drawButton();
+      }
+      else {
+        light49 = false;
+      }    
+      // delay(250);
+    }
+    if (light49 == true) {
+      matrix.drawPixel(3,9, 244);  
+        btn49.initButton(&tft, START + WIDTH * 3, START + HEIGHT * 9, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"49" , 2);
+    }
+    if (btn49.justPressed())  {
+      // btn49.drawButton(true);
+    }
+
+    //button 50
+    btn50.press(down && btn50.contains(pixel_x, pixel_y)); 
+    if (btn50.justReleased()) { 
+      if (light50 == false){
+        light50 = true;
+        btn50.initButton(&tft, START + WIDTH * 4, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, CYAN, BLACK,"50" , 2); 
+      btn50.drawButton();
+      }
+      else {
+        light50 = false;
+      }    
+      // delay(500);
+    }
+    if (light50 == true) {
+      matrix.drawPixel(4,4, 244);  
+        btn50.initButton(&tft,  START + WIDTH * 4, START + HEIGHT * 4, BTN_WIDTH, BTN_HEIGHT, WHITE, YELLOW, BLACK,"50" , 2);
+    }
+    if (btn50.justPressed())  {
+      // btn50.drawButton(true);
+    }
+
+
+
+//    if (on_btn.justReleased())
+//    if (new_btn.justReleased())
+//    if (off_btn.justReleased())
+//    if (on_btn.justPressed()) {
+//        on_btn.drawButton();
+       // on_btn.drawButton(true);
+//        new_btn.drawButton();
+//        //tft.fillRect(40, 80, 160, 80, GREEN);
+//        off_btn.drawButton();
+//    }
+//    if (off_btn.justPressed()) {
+       // off_btn.drawButton(true);
+//        //tft.fillRect(40, 80, 160, 80, RED);
+//    }
+//    if (new_btn.justPressed()) {
+//        new_btn.initButton(&tft,  100, 50, 30, 30, WHITE, RED, BLACK,"" , 2);
+       // new_btn.drawButton(true);
+//        //tft.fillRect(40, 80, 160, 80, GREEN);
+//    }
+
+
+matrix.show();
+delay(50);
+
+}
+#endif
