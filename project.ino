@@ -54,16 +54,17 @@ bool Touch_getXY(void)
 #define BLUE    0x001F
 #define RED     0xF800
 #define GREEN   0x07E0
+#define MY_GREEN   0xFD00
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
-#define HEIGHT 48
+#define HEIGHT 47
 #define WIDTH  66
 #define START  26
 #define BTN_WIDTH 53
-#define BTN_HEIGHT 40
+#define BTN_HEIGHT 39
 
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(10, 10, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_RIGHT +
@@ -146,9 +147,9 @@ void loop(void)
         if (lightColor[i] == 0) {
           lightColor[i] = 1;
           buttons[i].initButton(&tft,  START  + WIDTH * (i % 5) , START + (HEIGHT * y), BTN_WIDTH, BTN_HEIGHT, WHITE, BLACK, CYAN, charNumbers[i] , 2);
-        }else if ( lightColor == 1) {
+        }else if ( lightColor[i] == 1) {
           lightColor[i] = 2;
-          buttons[i].initButton(&tft,  START  + WIDTH * (i % 5) , START + (HEIGHT * y), BTN_WIDTH, BTN_HEIGHT, WHITE, BLACK, RED, charNumbers[i] , 2);
+          buttons[i].initButton(&tft,  START  + WIDTH * (i % 5) , START + (HEIGHT * y), BTN_WIDTH, BTN_HEIGHT, WHITE, BLACK, GREEN, charNumbers[i] , 2);
         }
         else {
           buttons[i].initButton(&tft,  START  + WIDTH * (i % 5) , START + (HEIGHT * y), BTN_WIDTH, BTN_HEIGHT, WHITE, WHITE, BLACK, charNumbers[i] , 2);
@@ -156,7 +157,7 @@ void loop(void)
         }
         buttons[i].drawButton(true);
        }
-       if (lightColor == 1) {
+       if (lightColor[i] == 1) {
         
         if ( y % 2 == 0) {
           matrix.drawPixel((i * 2 % 10) +1,y , 0xF81F); 
@@ -166,12 +167,12 @@ void loop(void)
         }
         
        }
-       else if (lightColor == 2) {
+       else if (lightColor[i] == 2) {
           if ( y % 2 == 0) {
-            matrix.drawPixel((i * 2 % 10) +1,y , RED); 
+            matrix.drawPixel((i * 2 % 10) +1,y , MY_GREEN); 
           }
           else {
-            matrix.drawPixel(i * 2 % 10,y , RED); 
+            matrix.drawPixel(i * 2 % 10,y , MY_GREEN); 
           }
        }
           
