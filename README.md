@@ -8,3 +8,5 @@ Arduino Mega
 WS2811 Addressable light string
 3.5 inch TFT Touch Screen
 
+![wall](https://user-images.githubusercontent.com/43457107/99445821-568d9400-28db-11eb-919c-964c1abec514.jpg)
+![Panel](https://user-images.githubusercontent.com/43457107/99445816-54c3d080-28db-11eb-8ac2-22339014df9f.jpg)
