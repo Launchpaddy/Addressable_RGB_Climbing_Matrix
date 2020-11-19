@@ -1,6 +1,11 @@
 /***
-* LOOP VERSION
-*
+* Climbing Wall Matrix
+* This Code is for an Arduino Mega that is connected to a: 
+* 1. Touchscreen Sheild TFT 320x480 3.5"
+* 2. WS2811 Addressable light string. 
+* 
+* Notes. For this project there were not any light strings with long enough spacing betwween lights so for every light on the wall there is a light behind the 
+* wall that is not used. 
 *
 */
 
@@ -124,6 +129,7 @@ void loop(void)
   matrix.setCursor(0, 0);
 
     bool down = Touch_getXY();
+// Error Checking
 //    if(down) {
 //      Serial.print("x: ");
 //      Serial.print(pixel_x);
@@ -140,6 +146,7 @@ void loop(void)
     {
 
        buttons[i].press(down && buttons[i].contains(pixel_x, pixel_y)); 
+       // How to move to next row.
        if (i != 0 && (i % 5) == 0) {
          y++;
        }
@@ -157,6 +164,7 @@ void loop(void)
         }
         buttons[i].drawButton(true);
        }
+       // Code to allow more than one color to be shown on the wall
        if (lightColor[i] == 1) {
         
         if ( y % 2 == 0) {
