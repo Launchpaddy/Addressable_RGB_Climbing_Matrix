@@ -6,6 +6,7 @@
 * 
 * Notes. For this project there were not any light strings with long enough spacing betwween lights so for every light on the wall there is a light behind the 
 * wall that is not used. 
+* 100 lights in total and 50 showing on the front of the panel.
 *
 */
 
